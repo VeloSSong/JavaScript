@@ -1,1 +1,1 @@
-JavaScript 개인 
+JavaScript 개인 공부
