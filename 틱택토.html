@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+       td {
+           border : 1px solid black;
+           width : 100px;
+           height: 100px;
+           text-align: center;
+           font-size : 50px;
+           font-weight: bold;
+       }
+       
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <div class="result"></div>
+
+    <script src = "https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+        var array = [];
+        var array2 = [];
+        var turn = 'X';
+        var chk = false;
+        const btn = document.querySelectorAll('td');
+        const res = document.querySelector('.result');
+
+        for(var i = 0; i < 3; i++) {
+            var tik = document.querySelectorAll('tr')[i];
+            array2.push(tik);
+            array.push([]);
+            for(var j =  0; j < 3; j++) {
+                var tik2 = tik.querySelectorAll('td')[j];
+                array[i].push(tik2);
+            }
+        }
+
+        btn.forEach(key => key.addEventListener('click', function(e) {
+            res.textContent = '';
+            var po = array2.indexOf(e.target.parentNode);
+            var po2 = array[po].indexOf(e.target);
+
+            if(array[po][po2].textContent == '') {
+                array[po][po2].textContent = turn;
+
+                if(array[po][0].textContent == turn && array[po][1].textContent == turn && array[po][2].textContent == turn) {
+                    chk = true;
+                }  // 가로 빙고
+                else if(array[0][po2].textContent == turn && array[1][po2].textContent == turn && array[2][po2].textContent == turn) {
+                    chk = true;
+                }  // 세로빙고
+                else if(array[0][0].textContent == turn && array[1][1].textContent == turn && array[2][2].textContent == turn) {
+                    chk = true;
+                }  // 왼쪽에서 오른쪽 대각선
+                else if(array[0][2].textContent == turn && array[1][1].textContent == turn && array[2][0].textContent == turn) {
+                    chk = true;
+                }  // 오른쪽에서 왼쪽 대각선
+                
+                else if(array[0][0].textContent != '' && array[0][1].textContent != '' && array[0][2].textContent != '' 
+                    && array[1][0].textContent != '' && array[1][1].textContent != '' && array[1][2].textContent != '' &&        // 무승부 체크
+                    array[2][0].textContent != '' && array[2][1].textContent != '' && array[2][2].textContent != '') {                  
+                        res.textContent = '무승부';
+                        array.forEach(po2 => {
+                            po2.forEach(po => {
+                                po.textContent = '';
+                            })
+                        })
+                        chk = false;
+                    }
+
+
+                if(chk == true) {
+                    // alert(`게임종료 ${turn}승리`);
+                    res.textContent = `게임종료 ${turn} 승리`
+                    turn = 'X';
+                    array.forEach(po2 => {
+                        po2.forEach(po => {
+                            po.textContent = '';
+                        })
+                    })
+                    chk = false;
+                }
+                else if(chk == false) {  
+                                   
+                    if(turn == 'X') {
+                        turn = 'O';     
+                    }
+                    // else if(turn == 'O') {
+                    //     turn = 'X'
+                    // }
+
+                    setTimeout(() => {
+                        var ar = [];
+                        array.forEach(d => {
+                            d.forEach(k => {
+                                ar.push(k)
+                            })
+                        })
+                       
+                        ar = ar.filter(d => { 
+                            return d.textContent == '';
+                        })                      
+                        var nnnn = Math.floor(Math.random() * ar.length)                      
+                        ar[nnnn].textContent = 'O';
+                        turn = 'X';
+                        var io = ar[nnnn].parentNode;
+                        var io2 = array[array2.indexOf(io)].indexOf(ar[nnnn]) 
+                        
+                        if(array[array2.indexOf(io)][0].textContent == 'O' && array[array2.indexOf(io)][1].textContent == 'O' && array[array2.indexOf(io)][2].textContent == 'O') {
+                            chk = true;
+                        }  // 가로 빙고
+                        else if(array[0][io2].textContent == 'O' && array[1][io2].textContent == 'O' && array[2][io2].textContent == 'O') {
+                            chk = true;
+                        }  // 세로빙고
+                        else if(array[0][0].textContent == 'O' && array[1][1].textContent == 'O' && array[2][2].textContent == 'O') {
+                            chk = true;
+                        }  // 왼쪽에서 오른쪽 대각선
+                        else if(array[0][2].textContent == 'O' && array[1][1].textContent == 'O' && array[2][0].textContent == 'O') {
+                            chk = true;
+                        }  // 오른쪽에서 왼쪽 대각선
+                        
+                        else if(array[0][0].textContent != '' && array[0][1].textContent != '' && array[0][2].textContent != '' 
+                            && array[1][0].textContent != '' && array[1][1].textContent != '' && array[1][2].textContent != '' &&        // 무승부 체크
+                            array[2][0].textContent != '' && array[2][1].textContent != '' && array[2][2].textContent != '') {                  
+                                res.textContent = '무승부';
+                                array.forEach(po2 => {
+                                    po2.forEach(po => {
+                                        po.textContent = '';
+                                    })
+                                })
+                                chk = false;
+                            }
+
+                        if(chk == true) {
+                            res.textContent = `게임종료 O 승리`
+                            turn = 'X';
+                            array.forEach(po2 => {
+                                po2.forEach(po => {
+                                    po.textContent = '';
+                                })
+                            })
+                            chk = false;
+                        }
+                    }, 1000)
+                }
+            }
+            else if(array[po][po2].textContent != '') {
+                alert('이미 놓은 자리입니다.')
+            }              
+        }))   
+        console.log(array);
+    </script>
+</body>
+</html>
