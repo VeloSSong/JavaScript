@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>카드뒤집기</title>
+    <style>
+        #wrap {
+            width : 500px;
+            margin: 150px auto;
+        }
+        .card {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            width: 100px;
+            height: 150px;
+            perspective: 200px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front {
+            background: navy;
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+            color : #fff;
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="wrap"></div>
+    <script>
+        const widthVal = 4;
+        const heightVal = 3;
+        const wrapper = document.querySelector('#wrap');
+        let colorList = ['red', 'red', 'green', 'green', 'hotpink', 'hotpink', 'orange', 'orange', 'yellow', 'yellow', 'purple', 'purple'];
+        let color = [];
+        let card_open_chk = false;
+        let clickArray = [];
+        let sucArray = [];
+        let startTime;
+
+        function shapple() {
+            console.log(colorList);
+            for(let i = 0; 0 < colorList.length; i++) {
+                color = color.concat(colorList.splice(Math.floor(Math.random() * colorList.length), 1));
+            }
+        }
+        
+        function CardSetting(widthVal, heightVal) {
+            for(let i = 0; i < widthVal * heightVal; i++) {
+                const card = document.createElement('div');
+                const cardInner = document.createElement('div');
+                const cardFront = document.createElement('div');
+                const cardBack = document.createElement('div');
+                
+                card.className = 'card';
+                cardInner.className = 'card-inner';
+                cardFront.className = 'card-front';
+                cardBack.className = 'card-back';
+                cardBack.style.background = color[i];
+                cardInner.appendChild(cardFront);
+                cardInner.appendChild(cardBack);
+                card.appendChild(cardInner);
+                card.addEventListener('click', () => {
+                    if(card_open_chk && !sucArray.includes(card)) {
+                        card.classList.toggle('flipped');
+                        clickArray.push(card);
+                    
+                        if(clickArray.length == 2) {
+                            card_open_chk = false;
+                            if(clickArray[0].querySelector('.card-back').style.background == clickArray[1].querySelector('.card-back').style.background) {
+                                sucArray.push(clickArray[0]);
+                                sucArray.push(clickArray[1]);                           
+                                clickArray = [];
+                                card_open_chk=true;
+                                if(sucArray.length == widthVal * heightVal) {
+                                    const endTime = new Date();
+                                    alert(`성공하시는대 ${(endTime-startTime) / 1000}초 걸리셨습니다.`)
+                                    wrapper.innerHTML = '';                                   
+                                    color = [];
+                                    sucArray = []; 
+                                    colorList = ['red', 'red', 'green', 'green', 'hotpink', 'hotpink', 'orange', 'orange', 'yellow', 'yellow', 'purple', 'purple'];                          
+                                    shapple();
+                                    CardSetting(widthVal, heightVal);
+                                }
+                            }
+                            else {                              
+                                setTimeout(() => {
+                                    clickArray[0].classList.remove('flipped');
+                                    clickArray[1].classList.remove('flipped');
+                                    clickArray = [];
+                                    card_open_chk=true;
+                                }, 1000)
+                            }
+                        }
+                    }
+                })
+                wrapper.appendChild(card);
+            }
+            document.querySelectorAll('.card').forEach((d, i) => {
+                setTimeout(() => {
+                    d.classList.add('flipped');
+                }, 100 * i)
+            })
+
+            document.querySelectorAll('.card').forEach((d, i) => {
+                setTimeout(() => {
+                    d.classList.remove('flipped');
+                    card_open_chk = true;
+                    startTime = new Date();
+                }, 5000)
+            })
+         
+        }
+        shapple();
+        CardSetting(widthVal, heightVal)
+    </script>
+</body>
+</html>
