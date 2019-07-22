@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>지뢰찾기</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin-top : 30px;
+        }
+        td {
+            border : 1px solid black;
+            width : 30px;
+            height: 30px;
+            text-align: center;
+            background-color : #444;
+            border : 2px solid #222;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .action {
+            background-color : #fff;
+        }
+        #time {
+            width : 50px;
+            margin-top : 10px;
+            border : 1px solid #222;
+            padding : 5px 10px;
+            text-align: center;
+        }
+        #Cm {
+            width : 50px;
+            margin-top : 10px;
+            border : 1px solid #222;
+            padding : 5px 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <input id = "aa" type = "number" placeholder="가로">
+    <input id = "bb" type = "number" placeholder="세로">
+    <input id = "mine" type = "number" placeholder="지뢰" data-sibal = '45'>
+    <button id = "btn">실행</button>
+    <table id = "table">
+        <thead>
+            <tr>
+                <!-- <td><span id="time">0</span>초</td> -->
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="time"><span>0</span>초</div>
+    <div id="Cm"><span>0</span>개</div>
+    <script src="./지뢰찾기.js"></script>
+</body>
+</html>
