@@ -21,7 +21,7 @@ function gogo() {
         else {
             left = 0;
         }
-        image.style.background = `url('./img/good.jpeg') ${left} 0`;
+        image.style.background = `url('../img/good.jpeg') ${left} 0`;
 
     }, 100)
 }
