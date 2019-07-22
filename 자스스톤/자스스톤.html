@@ -13,6 +13,7 @@
         }
         .turn {
             border: 1px solid blue;
+            padding : 10px;
         }
         #rival {
             vertical-align: bottom;
@@ -22,6 +23,7 @@
             vertical-align: top;
             width: 300px;
             background: silver;
+            padding : 20px 10px;
         }
         #rival-deck, #rival-hero, #rival-cards, #my-cards, #my-deck, #my-hero {
             text-align: center;
@@ -34,6 +36,10 @@
             border: 1px solid black;
             margin-bottom: 10px;
             background: white;
+            margin-right: 10px;
+        }
+        .card:last-child {
+            margin-right: 0;
         }
         .card-name {
             text-align: center;
@@ -93,7 +99,6 @@
         </div>
     </div>
     <div id="rival-deck">
-        <div>덱</div>
     </div>
     <hr />
     <button id="turn-btn">턴넘기기</button>
@@ -105,8 +110,7 @@
         </div>
         <div>코스트: <span id="my-cost">10</span>/<span>10</span></div>
     </div>
-    <div id="my-deck">
-        <div>덱</div>
+    <div id="my-deck">   
     </div>
     <div class="card-hidden">
         <div class="card">
