@@ -4,7 +4,10 @@ const rival = {
     cards : document.getElementById('rival-cards'),
     cost : document.getElementById('rival-cost'),
     Deck_Data : [],
-    Hero_Data : null
+    Field_Data : [],
+    Hero_Data : null,
+    Select_Card : null,
+    Select_CardData : null
 }
 const my = {
     Deck : document.getElementById('my-deck'),
@@ -12,10 +15,32 @@ const my = {
     cards : document.getElementById('my-cards'),
     cost : document.getElementById('my-cost'),
     Deck_Data : [],
-    Hero_Data : null
+    Field_Data : [],
+    Hero_Data : null,
+    Select_Card : null,
+    Select_CardData : null
 }
 const turn_btn = document.getElementById('turn-btn');
 let turn = true;
+
+function deckReDraw(sel) {
+    sel.Deck.innerHTML = '';
+    sel.Deck_Data.forEach(d => {               
+        card_Connect(d, sel.Deck);
+    })
+}
+
+function filedReDraw(sel) {
+    sel.cards.innerHTML = '';
+    sel.Field_Data.forEach(d => {
+        card_Connect(d, sel.cards);
+    })
+}
+
+function heroReDraw(sel) {
+    sel.hero.innerHTML = '';
+    card_Connect(sel.Hero_Data, sel.hero, true);
+}
 
 function moveField(d, chk) {
     const sel = chk ? my : rival;
@@ -24,13 +49,74 @@ function moveField(d, chk) {
     }
     const card_index = sel.Deck_Data.indexOf(d);
     sel.Deck_Data.splice(card_index, 1);
-    card_Connect(d, sel.cards);          
-    sel.Deck.innerHTML = '';
-    sel.Deck_Data.forEach(d => {               
-        card_Connect(d, sel.Deck);
-    })
+    sel.Field_Data.push(d);
+    card_Connect(d, sel.cards);         
+    deckReDraw(sel)
     d.field = true;
     sel.cost.textContent = sel.cost.textContent - d.cost;
+}
+
+function reDraw(chk) {
+    const sel = chk ? my : rival;
+    deckReDraw(sel);
+    filedReDraw(sel);
+    heroReDraw(sel);
+}
+
+function turnAction(d, card, turn) {
+    const where = turn ? my : rival;
+    const where2 = turn ? rival : my;
+
+    if (card.classList.contains('card-turnover')) {
+        return;
+    }
+
+    if((turn ? !d.mine : d.mine) && where.Select_Card) {
+        d.hp = d.hp - where.Select_CardData.att;
+        where.Select_Card.classList.remove('card-selected');
+        where.Select_Card.classList.add('card-turnover');
+        if(d.hp <= 0) {
+            const card_index = where2.Field_Data.indexOf(d);
+            if(card_index > -1) {
+                where2.Field_Data.splice(card_index, 1);
+            }
+            else {
+                alert('승리하셨습니다.');
+                where2.cost.textContent = 10;
+                where.cost.textContent = 10;
+                init();
+            }
+        }
+        where.Select_Card = null;
+        where.Select_CardData = null;
+        reDraw((turn ? false : true));
+        return;
+    }
+    else if((turn ? !d.mine : d.mine)) {
+        return;
+    }
+
+    if(d.field) {
+        const tp = turn ? '#my-hero .card' : '#rival-hero .card';
+        const tp1 = turn ? card.parentNode.previousSibling.previousSibling : card.parentNode.nextSibling.nextSibling;
+        document.querySelector(tp).classList.remove('card-selected')
+        card.parentNode.querySelectorAll('.card').forEach(d => {
+            d.classList.remove('card-selected');
+        });    
+        card.classList.add('card-selected');    
+        if(document.querySelector(tp).classList.contains('card-selected')) {
+            tp1.querySelectorAll('.card').forEach(d => {
+                    d.classList.remove('card-selected');
+            });
+        }
+        where.Select_Card = card;  
+        where.Select_CardData = d
+    }
+    else {
+        if(!moveField(d, (turn ? true : false))) {
+            turn ? myDeck(1) : rivalDeck(1);
+        }
+    }
 }
 
 function card_Connect(d, pos, hero) {
@@ -38,7 +124,6 @@ function card_Connect(d, pos, hero) {
     card.querySelector('.card-cost').textContent = d.cost;
     card.querySelector('.card-att').textContent = d.att;
     card.querySelector('.card-hp').textContent = d.hp;
-    pos.appendChild(card);
 
     if(hero) {
         card.querySelector('.card-cost').style.display = 'none';
@@ -48,43 +133,23 @@ function card_Connect(d, pos, hero) {
     }
 
     card.addEventListener('click', () => {
-        if(turn) {
-            if(!d.mine || d.field == true) {
-                return;
-            }
-            if(!moveField(d, true)) {
-                myDeck(1);
-            }
-        }
-        else {
-            if(d.mine || d.field == true) {
-                return;
-            }
-            if(!moveField(d, false)) {
-                rivalDeck(1);
-            }
-        }
+        turnAction(d, card, turn);
     })
+    pos.appendChild(card);
 }
 
 function rivalDeck(num) {
     for(let i = 0; i < num; i++) {
         rival.Deck_Data.push(factory());
     }
-    rival.Deck.innerHTML = '';
-    rival.Deck_Data.forEach(d => {
-        card_Connect(d, rival.Deck);
-    })
+    deckReDraw(rival);
 }
 
 function myDeck(num) {
     for(let i = 0; i < num; i++) {
         my.Deck_Data.push(factory(false, true));
     }
-    my.Deck.innerHTML = '';
-    my.Deck_Data.forEach(d => {
-        card_Connect(d, my.Deck);
-    })
+    deckReDraw(my);
 }
 
 function rivalHero() {
@@ -120,13 +185,25 @@ function factory(hero, myCard) {
 }
 
 function init() {
+    [rival, my].forEach(d => {
+        d.Deck_Data = [];
+        d.Field_Data = [];
+        d.Hero_Data = null;
+        d.Select_Card = null;
+        d.Select_CardData = null;
+    })
     rivalDeck(5);
     myDeck(5);
     rivalHero();
     myHero();
+    reDraw(true);
+    reDraw(false);
 }
 
-turn_btn.addEventListener('click', () => {
+turn_btn.addEventListener('click', () => { 
+    const sel = turn ? my : rival;
+    filedReDraw(sel);
+    heroReDraw(sel)
     turn = !turn;
     if(turn) {
         my.cost.textContent = 10;
