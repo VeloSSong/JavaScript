@@ -1,8 +1,10 @@
 const tetris = document.getElementById('tetris');
+const nextTetries = document.getElementById('next-table');
 let tetrisData = [];
 let currentTopLeft = [0, 3];
 let currentBlock;
 let nextBlock;
+let stopBlock = false;
 let blockInfo = [{
     name: 's', // 네모
     center: false,
@@ -198,50 +200,44 @@ let blockInfo = [{
   },
 ];
 const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'navy', 'violet'];
-// function init() {  // 화면 생성(구버전)
-//     const fragment = document.createDocumentFragment(); // 메모리개념 속도향상효과
-//     for(let i = 0; i < 20; i++) {
-//         const tr = document.createElement('tr');
-//         let arr = [];
-//         tetrisData.push(arr);
-//         fragment.appendChild(tr);
-//         for(let j = 0; j < 10; j++) {
-//             const td = document.createElement('td');
-//             arr.push(0);
-//             tr.appendChild(td);
-//         }
-//     }
-//     tetris.appendChild(fragment);   
-// }
 
-function init() {   // 화면생성(최신버전)
+function init() {
     const fragment = document.createDocumentFragment();
     [...Array(20).keys()].forEach(d => {
         const tr = document.createElement('tr');
         fragment.appendChild(tr);
-        [...Array(10).keys()].forEach(d => {
+        [...Array(10).keys()].forEach(p => {
             const td = document.createElement('td');
             tr.appendChild(td);
         })
-        const column = Array(10).fill(0);
-        tetrisData.push(column);
+        const arr = Array(10).fill(0);
+        tetrisData.push(arr);
     })
     tetris.appendChild(fragment);
 }
 
-function createBlock() {    // 블록 생성
+function createBlock() {
     if(!currentBlock) {
         currentBlock = blockInfo[Math.floor(Math.random() * blockInfo.length)];
     }
     else {
-        currentBlock = nextBlock;
+       currentBlock = nextBlock;
     }
-    nextBlock = blockInfo[Math.floor(Math.random() * blockInfo.length)];
     currentTopLeft = [-1, 3];
-    
+    nextBlock = null;
+    nextBlock = blockInfo[Math.floor(Math.random() * blockInfo.length)];
+    nextBlockView();
+
     currentBlock.shape[0].slice(1).forEach((d, i) => {
-        d.forEach((p, j) => {
-            if(p) {
+        d.forEach((k, j) => {
+            if(k && tetrisData[i][j+3]) {
+            //    겜종료
+            }
+        })
+    })
+    currentBlock.shape[0].slice(1).forEach((d, i) => {
+        d.forEach((k, j) => {
+            if(k) {
                 tetrisData[i][j+3] = currentBlock.numCode;
             }
         })
@@ -249,11 +245,27 @@ function createBlock() {    // 블록 생성
     drawBlock();
 }
 
-function drawBlock() { // 화면에 그리기
+function nextBlockView() {
+    nextBlock.shape[0].forEach((d, i) => {
+        d.forEach((p, j) => {
+            if(p) {
+                nextTetries.querySelectorAll('tr')[i].children[j].className = colors[nextBlock.numCode -1];
+                if(j != 3) {
+                    nextTetries.querySelectorAll('tr')[2].children[3].className = '';
+                }
+            }
+            else {
+                nextTetries.querySelectorAll('tr')[i].children[j].className = '';
+            }
+        })
+    })
+}
+
+function drawBlock() {
     tetrisData.forEach((d, i) => {
         d.forEach((p, j) => {
-            if(p > 0) {
-                tetris.children[i].children[j].className = colors[tetrisData[i][j]] >= 10 ? colors[tetrisData[i][j] / 10 -1] : colors[tetrisData[i][j] -1];
+            if(p) {
+                tetris.children[i].children[j].className = tetrisData[i][j] < 10 ? colors[tetrisData[i][j] - 1] : colors[tetrisData[i][j] / 10 - 1];
             }
             else {
                 tetris.children[i].children[j].className = '';
@@ -262,51 +274,67 @@ function drawBlock() { // 화면에 그리기
     })
 }
 
-function downBlock() {    // 블록 내리기
-    const nextTopLeft = [currentTopLeft[0] + 1, currentTopLeft[1]];
-    let activeBlock = true;
-    for(let i = tetrisData.length -1; i >= 0; i--) {
-        tetrisData[i].forEach((d, j) => {
-            if(d > 0 && d < 10) {
-                if(tetrisData[i+1] && !stopBlock) {
-                    tetrisData[i+1][j] = d;
-                    tetrisData[i][j] = 0;
-                }
-                else {
-                    tetrisData[i][j] = d * 10;
-                    stopBlock = true;
-                }
+function checkBlock() {
+    const check = [];
+    tetrisData.forEach((d, i) => {
+        let count = 0;
+        d.forEach((p, j) => {
+            if(p > 0) {
+                count++;
             }
         })
+        if(count == 10) {
+            check.push(i);
+        }
+    });
+
+    tetrisData = tetrisData.filter((d, i) => !check.includes(i));
+
+    for(let i = 0; i < check.length; i++) {
+        tetrisData.unshift([0,0,0,0,0,0,0,0,0,0]);
+    };
+}
+function downBlock() {
+    let check = [currentTopLeft[0] + 1, currentTopLeft[1]];
+    let downChk = true;
+    let arr = [];
+    let blockCount = currentBlock.shape[currentBlock.currentShapeIndex];
+
+    for(let i = currentTopLeft[0]; i < currentTopLeft[0] + blockCount.length; i++) {
+        if(i < 0 || i >= 20) continue;
+        for(let j = currentTopLeft[1]; j < currentTopLeft[1] + blockCount.length; j++) {
+            if(tetrisData[i][j] > 0 && tetrisData[i][j] < 10) {
+                arr.push([i,j]);
+                if(tetrisData[i + 1] == undefined || tetrisData[i + 1][j] >= 10) {
+                    downChk = false;
+                }
+            }
+        }
     }
-    if(stopBlock) {
+
+    if(downChk) {
+        for(let i = tetrisData.length - 1; i >= 0; i--) {
+            tetrisData[i].forEach((d, j) => {
+                if(d < 10 && tetrisData[i + 1] && tetrisData[i + 1][j] < 10) {
+                    tetrisData[i + 1][j] = d;
+                    tetrisData[i][j] =  0;
+                }
+            })
+        }
+        currentTopLeft = check;
+        drawBlock();
+    }
+    else if(!downChk) {
+        arr.forEach(d => {
+            tetrisData[d[0]][d[1]] *= 10;
+        })
+        checkBlock();
         createBlock();
     }
-    drawBlock();
+
 }
-
-window.addEventListener('keydown', e => {
-    switch(e.code) {
-        case 'ArrowLeft' :
-            break;
-        case 'ArrowRight' :
-            break;
-        case 'ArrowDown' :
-            break;
-        default :
-            break;
-    }
-});
-
-window.addEventListener('keyup', e => {
-    switch(e.code) {
-        case 'space' :
-            break;
-        case 'ArrowUp' :
-            break;
-    }
-})
 
 init();
 createBlock();
-// setInterval(downBlock, 100);
+// downBlock();
+// let ii = setInterval(downBlock, 100);
