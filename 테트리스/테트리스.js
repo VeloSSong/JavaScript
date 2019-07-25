@@ -224,7 +224,6 @@ function createBlock() {
        currentBlock = nextBlock;
     }
     currentTopLeft = [-1, 3];
-    nextBlock = null;
     nextBlock = blockInfo[Math.floor(Math.random() * blockInfo.length)];
     nextBlockView();
 
