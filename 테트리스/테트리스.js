@@ -5,7 +5,6 @@ let tetrisData = [];
 let currentTopLeft = [0, 3];
 let currentBlock;
 let nextBlock;
-let stopBlock = false;
 let blockInfo = [{
     name: 's', // 네모
     center: false,
