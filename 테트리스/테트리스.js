@@ -2,7 +2,7 @@ const tetris = document.getElementById('tetris');
 const nextTetries = document.getElementById('next-table');
 let score = 0;
 let tetrisData = [];
-let currentTopLeft = [0, 3];
+let currentTopLeft = [0, 3];  // tr, td
 let currentBlock;
 let nextBlock;
 let blockInfo = [{
@@ -298,7 +298,6 @@ function checkBlock() {         // 칸 다 차면 블록 지우기
     for(let i = 0; i < check.length; i++) {
         tetrisData.unshift([0,0,0,0,0,0,0,0,0,0]);
         score++;
-        console.log(score)
         document.getElementById('score').textContent = score;
     };
 }
@@ -438,7 +437,7 @@ function rotateBlock() {   // 블록 회전하기
 }
 let ii = setInterval(downBlock, 500);
 
-function startNow() {
+function startNow() {  // 시작함수
     clearInterval(ii);
     ii = setInterval(downBlock, 500);
     score = 0;
@@ -446,7 +445,7 @@ function startNow() {
     createBlock();
 }
 
-startNow();
+startNow();   
 
 window.addEventListener('keydown', e => {
     switch(e.code) {
