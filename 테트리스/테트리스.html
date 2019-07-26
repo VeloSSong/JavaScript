@@ -16,12 +16,13 @@
         }
         .tetris td {
             border: 1px solid black;
-            /* background-color: black; */
+            background-color: black;
             width: 30px;
             height: 30px;
         }
         .next-table td {
-            border: 1px solid black;
+            border: 1px solid #fff;
+            background-color: #fff;
             width: 15px;
             height: 15px;
         }
@@ -70,9 +71,7 @@
             <td></td><td></td><td></td><td></td>
         </tr>
     </table>
-    <button id="stop" class = "stop">중단</button>
-    <button id="start" class = "start">재개</button>
-    <button id="mute" class = "mute">소리끔</button>
+    <button id="mute" class = "mute">소리켬</button>
     <div>점수: <span id="score" class = "score">0</span></div>
     <audio id="bgm" class = "bgm" src="./Tetris_theme.ogg.mp3" autoplay></audio>
     <script src="./테트리스.js"></script>
