@@ -1,5 +1,6 @@
 const tetris = document.getElementById('tetris');
 const nextTetries = document.getElementById('next-table');
+let score = 0;
 let tetrisData = [];
 let currentTopLeft = [0, 3];
 let currentBlock;
@@ -304,6 +305,9 @@ function checkBlock() {         // 칸 다 차면 블록 지우기
 
     for(let i = 0; i < check.length; i++) {
         tetrisData.unshift([0,0,0,0,0,0,0,0,0,0]);
+        score++;
+        console.log(score)
+        document.getElementById('score').textContent = score;
     };
 }
 
@@ -445,6 +449,7 @@ let ii = setInterval(downBlock, 500);
 function startNow() {
     clearInterval(ii);
     ii = setInterval(downBlock, 500);
+    score = 0;
     init();
     createBlock();
 }
