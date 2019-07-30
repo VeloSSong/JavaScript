@@ -435,11 +435,11 @@ function rotateBlock() {   // 블록 회전하기
         drawBlock();
     }
 }
-let ii = setInterval(downBlock, 500);
+let ii = setInterval(downBlock, 100);
 
 function startNow() {  // 시작함수
     clearInterval(ii);
-    ii = setInterval(downBlock, 500);
+    ii = setInterval(downBlock, 100);
     score = 0;
     init();
     createBlock();
